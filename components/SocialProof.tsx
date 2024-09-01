@@ -19,7 +19,7 @@ const SocialProof: React.FC<SocialProofProps> = ({ testimonials }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {testimonials.map((testimonial, index) => (
             <div key={index} className="bg-gray-100 p-8 rounded-lg shadow-md">
-              <p className="mb-6 italic text-gray-600">"{testimonial.text}"</p>
+              <p className="mb-6 italic text-gray-600">&quot;{testimonial.text}&quot;</p>
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
                   {testimonial.name[0]}
