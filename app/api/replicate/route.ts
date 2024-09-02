@@ -1,3 +1,4 @@
+// app/api/replicate/route.ts
 import { NextResponse } from 'next/server';
 import Replicate from 'replicate';
 
@@ -37,6 +38,15 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     console.error('Detailed error:', error);
-    return NextResponse.json({ error: 'Failed to generate image', details: error.message }, { status: 500 });
+    
+    let errorMessage = 'An unknown error occurred';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return NextResponse.json(
+      { error: 'Failed to generate image', details: errorMessage },
+      { status: 500 }
+    );
   }
 }
