@@ -22,20 +22,14 @@ export async function POST(req: Request) {
       input_image: uploadedImageUrl
     };
 
-    console.log('Sending request to Replicate with input:', JSON.stringify(input));
+    console.log('Starting prediction with Replicate');
 
-    const output = await replicate.run(
-      "tencentarc/photomaker:ddfc2b08d209f9fa8c1eca692712918bd449f695dabb4a958da31802a9570fe4",
-      { input }
-    );
+    const prediction = await replicate.predictions.create({
+      version: "ddfc2b08d209f9fa8c1eca692712918bd449f695dabb4a958da31802a9570fe4",
+      input: input,
+    });
 
-    console.log('Received output from Replicate:', JSON.stringify(output));
-
-    if (Array.isArray(output) && output.length > 0) {
-      return NextResponse.json({ generatedImageUrl: output[0] });
-    } else {
-      throw new Error('No output generated from Replicate API');
-    }
+    return NextResponse.json({ predictionId: prediction.id });
   } catch (error) {
     console.error('Detailed error:', error);
     
@@ -45,7 +39,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(
-      { error: 'Failed to generate image', details: errorMessage },
+      { error: 'Failed to start image generation', details: errorMessage },
       { status: 500 }
     );
   }
