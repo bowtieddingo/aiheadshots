@@ -1,5 +1,5 @@
 // app/api/auth/[...nextauth]/route.ts
-import NextAuth, { DefaultSession } from "next-auth";
+import NextAuth, { DefaultSession, NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
@@ -12,7 +12,7 @@ declare module "next-auth" {
   }
 }
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -25,12 +25,16 @@ const handler = NextAuth({
         const { name, email, image } = user;
         try {
           await dbConnect();
-          const existingUser = await User.findOne({ email });
+          let dbUser = await User.findOne({ email });
           
-          if (!existingUser) {
-            const newUser = new User({ name, email, image });
-            await newUser.save();
+          if (!dbUser) {
+            dbUser = new User({ name, email, image });
+            await dbUser.save();
           }
+          
+          // Ensure the user object has the id field set
+          user.id = dbUser.id;
+          
           return true;
         } catch (error) {
           console.error("Error saving user:", error);
@@ -58,6 +62,7 @@ const handler = NextAuth({
   session: {
     strategy: "jwt",
   },
-});
+};
 
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

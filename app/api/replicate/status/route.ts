@@ -1,14 +1,24 @@
 // app/api/replicate/status/route.ts
-
 import { NextResponse } from 'next/server';
 import Replicate from 'replicate';
+import { getServerSession } from "next-auth/next";
+import dbConnect from '@/lib/dbConnect';
+import Generation from '@/models/Generation';
+import { authOptions } from '../../auth/[...nextauth]/route';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const predictionId = searchParams.get('id');
+  const originalImageUrl = searchParams.get('originalImageUrl');
+  const gender = searchParams.get('gender');
 
-  if (!predictionId) {
-    return NextResponse.json({ error: 'Prediction ID is required' }, { status: 400 });
+  if (!predictionId || !originalImageUrl || !gender) {
+    return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
+  }
+
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user || !session.user.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
@@ -19,7 +29,18 @@ export async function GET(req: Request) {
     const prediction = await replicate.predictions.get(predictionId);
 
     if (prediction.status === 'succeeded') {
-      return NextResponse.json({ status: 'complete', output: prediction.output });
+      const generatedImageUrl = prediction.output[0];
+
+      // Save to MongoDB
+      await dbConnect();
+      await Generation.create({
+        userId: session.user.id,
+        originalImageUrl,
+        generatedImageUrl,
+        gender,
+      });
+
+      return NextResponse.json({ status: 'complete', output: generatedImageUrl });
     } else if (prediction.status === 'failed') {
       return NextResponse.json({ status: 'failed', error: prediction.error });
     } else {

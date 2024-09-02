@@ -56,18 +56,18 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    if (!predictionId) return;
+    if (!predictionId || !uploadedImageUrl) return;
 
     const checkStatus = async () => {
       try {
-        const response = await fetch(`/api/replicate/status?id=${predictionId}`);
+        const response = await fetch(`/api/replicate/status?id=${predictionId}&originalImageUrl=${encodeURIComponent(uploadedImageUrl)}&gender=${selectedGender}`);
         if (!response.ok) {
           throw new Error('Failed to check prediction status');
         }
         const data = await response.json();
         
         if (data.status === 'complete') {
-          setGeneratedImageUrl(data.output[0]);
+          setGeneratedImageUrl(data.output);
           setIsGenerating(false);
           setPredictionId(null);
         } else if (data.status === 'failed') {
@@ -85,48 +85,48 @@ export default function DashboardPage() {
     };
 
     checkStatus();
-  }, [predictionId]);
+  }, [predictionId, uploadedImageUrl, selectedGender]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">AI Headshot Generator</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl sm:text-3xl font-bold">AI Headshot Generator</h1>
       <Card>
         <CardHeader>
           <CardTitle>Upload Your Photo</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <Upload onUploadComplete={handleUploadComplete} onGenderChange={handleGenderChange} />
           {uploadedImageUrl && (
             <Button 
               onClick={handleGenerateHeadshot} 
               disabled={isGenerating}
-              className="mt-4"
+              className="w-full sm:w-auto"
             >
               {isGenerating ? "Generating..." : "Generate Headshot"}
             </Button>
           )}
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-4">Before and After</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h4 className="text-md font-medium mb-2">Original Image</h4>
-                <div className="bg-muted rounded-lg p-4 flex items-center justify-center h-[300px]">
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Before and After</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="text-md font-medium">Original Image</h4>
+                <div className="bg-muted rounded-lg p-4 flex items-center justify-center h-[200px] sm:h-[300px]">
                   {uploadedImageUrl ? (
                     <img src={uploadedImageUrl} alt="Original Image" className="max-w-full max-h-full object-contain" />
                   ) : (
-                    <p className="text-muted-foreground">Upload an image to see it here</p>
+                    <p className="text-muted-foreground text-center">Upload an image to see it here</p>
                   )}
                 </div>
               </div>
-              <div>
-                <h4 className="text-md font-medium mb-2">Generated Headshot ({selectedGender})</h4>
-                <div className="bg-muted rounded-lg p-4 flex items-center justify-center h-[300px]">
+              <div className="space-y-2">
+                <h4 className="text-md font-medium">Generated Headshot</h4>
+                <div className="bg-muted rounded-lg p-4 flex items-center justify-center h-[200px] sm:h-[300px]">
                   {isGenerating ? (
-                    <p>Generating headshot...</p>
+                    <p className="text-center">Generating headshot...</p>
                   ) : generatedImageUrl ? (
                     <img src={generatedImageUrl} alt="Generated Headshot" className="max-w-full max-h-full object-contain" />
                   ) : (
-                    <p className="text-muted-foreground">Your generated headshot will appear here</p>
+                    <p className="text-muted-foreground text-center">Your generated headshot will appear here</p>
                   )}
                 </div>
               </div>
