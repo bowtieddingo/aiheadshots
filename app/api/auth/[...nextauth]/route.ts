@@ -1,8 +1,16 @@
 // app/api/auth/[...nextauth]/route.ts
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
+
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user?: {
+      id?: string;
+    } & DefaultSession["user"]
+  }
+}
 
 const handler = NextAuth({
   providers: [
