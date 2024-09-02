@@ -1,7 +1,13 @@
 // components/TopNav.tsx
+'use client';
+
 import React from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
+import Link from 'next/link';
 
 const TopNav: React.FC = () => {
+  const { data: session } = useSession();
+
   return (
     <nav className="bg-white shadow-md">
       <div className="container mx-auto px-6 py-3 flex justify-between items-center">
@@ -9,10 +15,28 @@ const TopNav: React.FC = () => {
           <span className="text-xl font-bold text-gray-800">YourLogo</span>
         </div>
         <div className="hidden md:flex items-center space-x-8">
-          <a href="#" className="text-gray-800 hover:text-indigo-600 transition duration-300">Home</a>
-          <a href="#" className="text-gray-800 hover:text-indigo-600 transition duration-300">Features</a>
-          <a href="#" className="text-gray-800 hover:text-indigo-600 transition duration-300">Pricing</a>
-          <a href="#" className="text-gray-800 hover:text-indigo-600 transition duration-300">Contact</a>
+          <Link href="/" className="text-gray-800 hover:text-indigo-600 transition duration-300">Home</Link>
+          <Link href="#" className="text-gray-800 hover:text-indigo-600 transition duration-300">Features</Link>
+          <Link href="#" className="text-gray-800 hover:text-indigo-600 transition duration-300">Pricing</Link>
+          <Link href="#" className="text-gray-800 hover:text-indigo-600 transition duration-300">Contact</Link>
+          {session ? (
+            <>
+              <Link href="/dashboard" className="text-gray-800 hover:text-indigo-600 transition duration-300">Dashboard</Link>
+              <button
+                onClick={() => signOut()}
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => signIn('google')}
+              className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded transition duration-300"
+            >
+              Sign In
+            </button>
+          )}
         </div>
         <div className="md:hidden">
           <button className="text-gray-800 hover:text-indigo-600 focus:outline-none">
