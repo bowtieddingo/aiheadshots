@@ -1,4 +1,5 @@
-// app/dashboard/page."use client";
+// app/dashboard/page.
+"use client";
 import { useState, useEffect } from 'react';
 import { Upload } from '@/components/Upload'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
