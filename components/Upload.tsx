@@ -1,40 +1,60 @@
 // components/Upload.tsx
 "use client";
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Upload as UploadIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { UploadDropzone } from "@/utils/uploadthing";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-export function Upload() {
-  const [file, setFile] = useState<File | null>(null)
+export function Upload({ onUploadComplete, onGenderChange }: { 
+  onUploadComplete: (url: string, gender: string) => void,
+  onGenderChange: (gender: string) => void 
+}) {
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
+  const [selectedGender, setSelectedGender] = useState<string>("male");
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0])
+  const handleUploadComplete = (res: { url: string }[]) => {
+    if (res && res[0]) {
+      const url = res[0].url;
+      setUploadedFileUrl(url);
+      onUploadComplete(url, selectedGender);
     }
-  }
+  };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    // Here you would typically handle the file upload to your backend
-    console.log('File to upload:', file)
-  }
+  const handleGenderChange = (gender: string) => {
+    setSelectedGender(gender);
+    onGenderChange(gender);
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid w-full max-w-sm items-center gap-1.5">
-        <Label htmlFor="picture">Picture</Label>
-        <Input id="picture" type="file" onChange={handleFileChange} accept="image/png, image/jpeg" />
-      </div>
-      {file && (
+    <div className="space-y-4">
+      <Select onValueChange={handleGenderChange} defaultValue="male">
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Select gender" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="male">Male</SelectItem>
+          <SelectItem value="female">Female</SelectItem>
+        </SelectContent>
+      </Select>
+      <UploadDropzone
+        endpoint="imageUploader"
+        onClientUploadComplete={handleUploadComplete}
+        onUploadError={(error: Error) => {
+          alert(`Upload ERROR! ${error.message}`);
+        }}
+      />
+      {uploadedFileUrl && (
         <div className="text-sm text-muted-foreground">
-          Selected file: {file.name}
+          File uploaded successfully. URL: {uploadedFileUrl}
         </div>
       )}
-      <Button type="submit">
-        <UploadIcon className="mr-2 h-4 w-4" /> Generate Headshot
-      </Button>
-    </form>
+    </div>
   )
 }
