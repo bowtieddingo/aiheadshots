@@ -40,7 +40,13 @@ export function UserButton() {
       }
     } catch (error) {
       console.error('Error redirecting to customer portal:', error);
-      alert('Unable to access billing portal. Please try again later.');
+      let errorMessage = 'Unable to access billing portal. Please try again later.';
+      if (error.message.includes('No active subscription found')) {
+        errorMessage = 'You don\'t have an active subscription. Please subscribe to a plan first.';
+      } else if (error.message.includes('No customer associated with the subscription')) {
+        errorMessage = 'There was an issue with your subscription. Please contact support.';
+      }
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }

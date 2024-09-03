@@ -3,28 +3,43 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import Stripe from 'stripe';
+import User from '@/models/User';
+import dbConnect from '@/lib/dbConnect';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2023-10-16',
 });
 
 export async function POST() {
+  await dbConnect();
+
   const session = await getServerSession(authOptions);
 
-  if (!session || !session.user) {
+  if (!session || !session.user || !session.user.email) {
     return NextResponse.json({ error: 'You must be logged in.' }, { status: 401 });
   }
 
   try {
-    // Retrieve the Stripe customer ID from your database
-    const stripeCustomerId = await getStripeCustomerId(session.user.id);
+    // Fetch user from database
+    const user = await User.findOne({ email: session.user.email });
 
-    if (!stripeCustomerId) {
-      return NextResponse.json({ error: 'No associated Stripe customer found.' }, { status: 400 });
+    if (!user || !user.stripeSubscriptionId) {
+      return NextResponse.json({ error: 'No active subscription found.' }, { status: 400 });
     }
+
+    // Fetch the subscription from Stripe
+    const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+
+    if (!subscription.customer) {
+      return NextResponse.json({ error: 'No customer associated with the subscription.' }, { status: 400 });
+    }
+
+    // Ensure the customer is a string (it can be a string or a Stripe.Customer object)
+    const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id;
 
     // Create a Stripe customer portal session
     const portalSession = await stripe.billingPortal.sessions.create({
-      customer: stripeCustomerId,
+      customer: customerId,
       return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
     });
 
@@ -34,12 +49,4 @@ export async function POST() {
     console.error('Error creating portal session:', error);
     return NextResponse.json({ error: 'Failed to create portal session.', details: error.message }, { status: 500 });
   }
-}
-
-// This function should be implemented to fetch the Stripe customer ID from your database
-async function getStripeCustomerId(userId: string): Promise<string | null> {
-  // TODO: Implement this function to retrieve the Stripe customer ID from your database
-  console.log('Fetching Stripe customer ID for user:', userId);
-  // For now, return null to simulate no customer found
-  return null;
 }
