@@ -37,8 +37,8 @@ Before you begin, ensure you have the following:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/bowtieddingo/ai-headshot-generator.git
-   cd ai-headshot-generator
+   git clone https://github.com/bowtieddingo/aiheadshots.git
+   cd aiheadshots
    ```
 
 2. Install dependencies:
