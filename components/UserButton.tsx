@@ -45,6 +45,8 @@ export function UserButton() {
         errorMessage = 'You don\'t have an active subscription. Please subscribe to a plan first.';
       } else if (error.message.includes('No customer associated with the subscription')) {
         errorMessage = 'There was an issue with your subscription. Please contact support.';
+      } else if (error.message.includes('Invalid URL')) {
+        errorMessage = 'There was an issue with the application configuration. Please contact support.';
       }
       alert(errorMessage);
     } finally {

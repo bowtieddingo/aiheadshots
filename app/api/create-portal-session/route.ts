@@ -10,6 +10,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
 });
 
+function ensureHttps(url: string): string {
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    return `https://${url}`;
+  }
+  return url;
+}
+
 export async function POST() {
   await dbConnect();
 
@@ -37,10 +44,13 @@ export async function POST() {
     // Ensure the customer is a string (it can be a string or a Stripe.Customer object)
     const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id;
 
+    // Ensure the return_url has a proper scheme
+    const returnUrl = ensureHttps(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard`);
+
     // Create a Stripe customer portal session
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+      return_url: returnUrl,
     });
 
     // Return the URL of the portal session
