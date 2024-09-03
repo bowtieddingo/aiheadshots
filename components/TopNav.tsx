@@ -12,13 +12,13 @@ const TopNav: React.FC = () => {
     <nav className="bg-white shadow-md">
       <div className="container mx-auto px-6 py-3 flex justify-between items-center">
         <div className="flex items-center">
-          <span className="text-xl font-bold text-gray-800">YourLogo</span>
+          <Link href="/" className="text-xl font-bold text-gray-800">AI Headshots</Link>
         </div>
         <div className="hidden md:flex items-center space-x-8">
           <Link href="/" className="text-gray-800 hover:text-indigo-600 transition duration-300">Home</Link>
-          <Link href="#" className="text-gray-800 hover:text-indigo-600 transition duration-300">Features</Link>
-          <Link href="#" className="text-gray-800 hover:text-indigo-600 transition duration-300">Pricing</Link>
-          <Link href="#" className="text-gray-800 hover:text-indigo-600 transition duration-300">Contact</Link>
+          <Link href="#features" className="text-gray-800 hover:text-indigo-600 transition duration-300">Features</Link>
+          <Link href="#pricing" className="text-gray-800 hover:text-indigo-600 transition duration-300">Pricing</Link>
+          <Link href="#contact" className="text-gray-800 hover:text-indigo-600 transition duration-300">Contact</Link>
           {session ? (
             <>
               <Link href="/dashboard" className="text-gray-800 hover:text-indigo-600 transition duration-300">Dashboard</Link>

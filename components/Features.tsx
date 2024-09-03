@@ -10,7 +10,7 @@ const Features: React.FC = () => {
   ];
 
   return (
-    <section className="bg-white py-20">
+    <section className="bg-white py-20" id="features">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-12 text-center text-gray-800">Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">

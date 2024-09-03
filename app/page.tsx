@@ -10,6 +10,7 @@ import SocialProof from '../components/SocialProof';
 import Benefits from '../components/Benefits';
 import Features from '../components/Features';
 import Pricing from '../components/Pricing';
+import BeforeAfter from '../components/BeforeAfter';
 
 const LeadForm = dynamic(() => import('../components/LeadForm'), { ssr: false });
 
@@ -19,15 +20,12 @@ export default function Home() {
     <TopNav />
     <main className="font-sans">
       <Hero />
-      <LeadForm
-        title="Join Our Beta"
-        subtitle="Sign up now to get early access and exclusive offers for our new SaaS platform."
-        buttonText="Get Early Access"
-      />
-      <CallToAction 
-        text="Ready to upgrade your professional image?" 
-        buttonText="Generate Your Headshot"
-      />
+      <BeforeAfter
+      beforeUrl="https://utfs.io/f/39336f23-f117-47d1-8713-8de14e48bf89-6shtvj.jpg"
+      afterUrl="https://utfs.io/f/47e150b8-a9af-400e-95bd-012600a6cd74-vmbdcc.png"
+      beforeAlt="Before AI enhancement"
+      afterAlt="After AI enhancement"
+    />
       <SocialProof 
         testimonials={[
           { name: "John Doe", role: "Marketing Manager", text: "This AI headshot generator saved me time and money. The results are impressive!" },
@@ -35,7 +33,11 @@ export default function Home() {
           { name: "Mike Johnson", role: "Freelance Consultant", text: "As a freelancer, this tool helps me maintain a professional image across all platforms." }
         ]}
       />
-      <Benefits />
+     <CallToAction 
+        text="Ready to upgrade your professional image?" 
+        buttonText="Generate Your Headshot"
+      />
+     <Benefits />
       <CallToAction 
         text="Join thousands of professionals who've upgraded their image" 
         buttonText="Start Now"
@@ -52,6 +54,11 @@ export default function Home() {
       <CallToAction 
         text="Ready to transform your professional image?" 
         buttonText="Generate Your Headshot Now"
+      />
+      <LeadForm
+        title="Join Our Community"
+        subtitle="Sign up now to get exclusive offers and discounts"
+        buttonText="Join Our Community"
       />
     </main>
     <Footer />
