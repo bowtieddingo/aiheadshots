@@ -1,4 +1,3 @@
-// app/dashboard/page.
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -71,7 +70,7 @@ export default function DashboardPage() {
       return;
     }
 
-    if (userTokens && userTokens <= 0) {
+    if (userTokens !== null && userTokens <= 0) {
       setError("You don't have enough tokens. Please upgrade your plan.");
       return;
     }
@@ -99,6 +98,15 @@ export default function DashboardPage() {
       console.error("Error starting headshot generation:", error);
       setError(error instanceof Error ? error.message : 'An unknown error occurred');
       setIsGenerating(false);
+    }
+  };
+
+  const handleButtonClick = () => {
+    if (userTokens === 0) {
+      // Navigate to the pricing page
+      window.location.href = '/pricing';
+    } else {
+      handleGenerateHeadshot();
     }
   };
 
@@ -157,11 +165,11 @@ export default function DashboardPage() {
           <Upload onUploadComplete={handleUploadComplete} onGenderChange={handleGenderChange} />
           {uploadedImageUrl && (
             <Button 
-              onClick={handleGenerateHeadshot} 
-              disabled={isGenerating || (userTokens !== null && userTokens <= 0)}
+              onClick={handleButtonClick} 
+              disabled={isGenerating || (userTokens !== null && userTokens < 0)}
               className="w-full sm:w-auto"
             >
-              {isGenerating ? "Generating..." : "Generate Headshot"}
+              {userTokens === 0 ? "Get Tokens" : isGenerating ? "Generating..." : "Generate Headshot"}
             </Button>
           )}
           {error && (
