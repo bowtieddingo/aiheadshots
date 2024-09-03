@@ -7,7 +7,6 @@ import User from '@/models/User';
 import dbConnect from '@/lib/dbConnect';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
 });
 
 function ensureHttps(url: string): string {
