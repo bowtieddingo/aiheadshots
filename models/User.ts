@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
-  _id: {
-    type: String,
-    alias: 'id',
-  },
   name: String,
   email: {
     type: String,
@@ -12,11 +8,21 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
   image: String,
+  stripeSubscriptionId: String,
+  stripePlanId: String,
+  isSubscriptionActive: {
+    type: Boolean,
+    default: false,
+  },
+  tokens: {
+    type: Number,
+    default: 0,
+  },
 }, { timestamps: true });
 
-// This will allow us to use 'id' instead of '_id' when working with the model
+// Virtual for `id`
 UserSchema.virtual('id').get(function() {
-  return this._id;
+  return this._id.toString();
 });
 
 // Ensure virtual fields are serialized

@@ -9,6 +9,7 @@ import CallToAction from '../components/CTA';
 import SocialProof from '../components/SocialProof';
 import Benefits from '../components/Benefits';
 import Features from '../components/Features';
+import Pricing from '../components/Pricing';
 
 const LeadForm = dynamic(() => import('../components/LeadForm'), { ssr: false });
 
@@ -40,6 +41,7 @@ export default function Home() {
         buttonText="Start Now"
       />
       <Features />
+      <Pricing />
       <SocialProof 
         testimonials={[
           { name: "Sarah Lee", role: "HR Specialist", text: "We use this for all our employee profiles. It's consistent and professional." },
